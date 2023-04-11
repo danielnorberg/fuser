@@ -21,7 +21,7 @@ use std::{convert::AsRef, io::ErrorKind};
 
 use crate::ll::fuse_abi::consts::*;
 pub use crate::ll::fuse_abi::FUSE_ROOT_ID;
-pub use crate::ll::{fuse_abi::consts, TimeOrNow};
+pub use crate::ll::{fuse_abi::consts, TimeOrNow, fuse_abi::fuse_out_header};
 use crate::mnt::mount_options::check_option_conflicts;
 use crate::session::MAX_WRITE_SIZE;
 #[cfg(feature = "abi-7-16")]

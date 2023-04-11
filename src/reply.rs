@@ -50,9 +50,9 @@ pub trait Reply {
 /// Raw reply
 ///
 #[derive(Debug)]
-pub(crate) struct ReplyRaw {
+pub struct ReplyRaw {
     /// Unique id of the request to reply to
-    unique: ll::RequestId,
+    pub unique: ll::RequestId,
     /// Closure to call for sending the reply
     sender: Option<Box<dyn ReplySender>>,
 }
@@ -134,7 +134,7 @@ impl ReplyEmpty {
 ///
 #[derive(Debug)]
 pub struct ReplyData {
-    reply: ReplyRaw,
+    pub reply: ReplyRaw,
 }
 
 impl Reply for ReplyData {

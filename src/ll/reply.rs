@@ -26,7 +26,7 @@ pub enum Response<'a> {
 
 #[must_use]
 impl<'a> Response<'a> {
-    pub(crate) fn with_iovec<F: FnOnce(&[IoSlice<'_>]) -> T, T>(
+    pub fn with_iovec<F: FnOnce(&[IoSlice<'_>]) -> T, T>(
         &self,
         unique: RequestId,
         f: F,

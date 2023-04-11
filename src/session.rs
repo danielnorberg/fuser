@@ -41,7 +41,7 @@ pub struct Session<FS: Filesystem> {
     /// Filesystem operation implementations
     pub(crate) filesystem: FS,
     /// Communication channel to the kernel driver
-    ch: Channel,
+    pub ch: Channel,
     /// Handle to the mount.  Dropping this unmounts.
     mount: Arc<Mutex<Option<Mount>>>,
     /// Mount point
@@ -212,6 +212,8 @@ pub struct BackgroundSession {
     pub guard: JoinHandle<io::Result<()>>,
     /// Ensures the filesystem is unmounted when the session ends
     _mount: Mount,
+
+    pub ch: Channel,
 }
 
 impl BackgroundSession {
@@ -233,6 +235,7 @@ impl BackgroundSession {
             mountpoint,
             guard,
             _mount: mount,
+            ch: se.ch
         })
     }
     /// Unmount the filesystem and join the background thread.
@@ -241,6 +244,7 @@ impl BackgroundSession {
             mountpoint: _,
             guard,
             _mount,
+            ch: _
         } = self;
         drop(_mount);
         guard.join().unwrap().unwrap();

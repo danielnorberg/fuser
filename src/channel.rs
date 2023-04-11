@@ -6,7 +6,7 @@ use crate::reply::ReplySender;
 
 /// A raw communication channel to the FUSE kernel driver
 #[derive(Debug)]
-pub struct Channel(Arc<File>);
+pub struct Channel(pub Arc<File>);
 
 impl Channel {
     /// Create a new communication channel to the kernel driver by mounting the
