@@ -87,6 +87,10 @@ impl ReplyRaw {
         assert_ne!(err, 0);
         self.send_ll(&ll::Response::new_error(ll::Errno::from_i32(err)));
     }
+
+    pub fn consume(&mut self) {
+        self.sender = None;
+    }
 }
 
 impl Drop for ReplyRaw {
