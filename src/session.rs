@@ -64,7 +64,7 @@ pub struct Session<FS: Filesystem> {
 impl<FS: Filesystem> Session<FS> {
     /// Create a new session by mounting the given filesystem to the given mountpoint
     pub fn new(
-        filesystem: FS,
+        mut filesystem: FS,
         mountpoint: &Path,
         options: &[MountOption],
     ) -> io::Result<Session<FS>> {
@@ -92,6 +92,8 @@ impl<FS: Filesystem> Session<FS> {
         } else {
             SessionACL::Owner
         };
+
+        filesystem.set_fd(ch.0.clone());
 
         Ok(Session {
             filesystem,
