@@ -41,6 +41,8 @@ pub use session::{BackgroundSession, Session, SessionUnmounter};
 use std::cmp::max;
 #[cfg(feature = "abi-7-13")]
 use std::cmp::min;
+use std::sync::Arc;
+use std::fs::File;
 
 mod channel;
 mod ll;
@@ -286,6 +288,9 @@ impl KernelConfig {
 /// nothing.
 #[allow(clippy::too_many_arguments)]
 pub trait Filesystem {
+
+    fn set_fd(&mut self, fd: Arc<File>) {
+    }
     /// Initialize filesystem.
     /// Called before any other filesystem method.
     /// The kernel module connection can be configured using the KernelConfig object

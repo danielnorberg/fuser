@@ -213,7 +213,7 @@ pub struct BackgroundSession {
     /// Ensures the filesystem is unmounted when the session ends
     _mount: Mount,
 
-    pub ch: Channel,
+    pub ch: Arc<std::fs::File>,
 }
 
 impl BackgroundSession {
@@ -223,6 +223,7 @@ impl BackgroundSession {
     pub fn new<FS: Filesystem + Send + 'static>(
         mut se: Session<FS>,
     ) -> io::Result<BackgroundSession> {
+        let fd = se.ch.0.clone();
         let mountpoint = se.mountpoint().to_path_buf();
         // Take the fuse_session, so that we can unmount it
         let mount = std::mem::take(&mut *se.mount.lock().unwrap());
@@ -235,7 +236,7 @@ impl BackgroundSession {
             mountpoint,
             guard,
             _mount: mount,
-            ch: se.ch
+            ch: fd
         })
     }
     /// Unmount the filesystem and join the background thread.
