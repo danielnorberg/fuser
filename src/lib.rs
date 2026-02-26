@@ -85,6 +85,8 @@ mod access_flags;
 mod bsd_file_flags;
 mod channel;
 mod dev_fuse;
+/// Transport-agnostic request dispatch APIs.
+pub mod dispatch;
 /// Experimental APIs
 #[cfg(feature = "experimental")]
 pub mod experimental;

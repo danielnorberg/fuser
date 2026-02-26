@@ -10,6 +10,7 @@ use std::convert::AsRef;
 use std::ffi::OsStr;
 use std::io::IoSlice;
 use std::os::fd::BorrowedFd;
+use std::sync::Arc;
 use std::time::Duration;
 #[cfg(target_os = "macos")]
 use std::time::SystemTime;
@@ -35,13 +36,26 @@ use crate::ll::{self};
 use crate::passthrough::BackingId;
 
 /// Generic reply callback to send data
-#[derive(Debug)]
 pub(crate) enum ReplySender {
     Channel(ChannelSender),
+    Outbound(Arc<dyn crate::dispatch::Outbound>),
     #[cfg(test)]
     Assert(AssertSender),
     #[cfg(test)]
     Sync(std::sync::mpsc::SyncSender<()>),
+}
+
+impl std::fmt::Debug for ReplySender {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ReplySender::Channel(_) => f.debug_tuple("Channel").finish(),
+            ReplySender::Outbound(_) => f.debug_tuple("Outbound").finish(),
+            #[cfg(test)]
+            ReplySender::Assert(_) => f.debug_tuple("Assert").finish(),
+            #[cfg(test)]
+            ReplySender::Sync(_) => f.debug_tuple("Sync").finish(),
+        }
+    }
 }
 
 impl ReplySender {
@@ -49,6 +63,7 @@ impl ReplySender {
     pub(crate) fn send(&self, data: &[IoSlice<'_>]) -> std::io::Result<()> {
         match self {
             ReplySender::Channel(sender) => sender.send(data),
+            ReplySender::Outbound(sender) => sender.send(data),
             #[cfg(test)]
             ReplySender::Assert(sender) => sender.send(data),
             #[cfg(test)]
@@ -63,6 +78,7 @@ impl ReplySender {
     pub(crate) fn open_backing(&self, fd: BorrowedFd<'_>) -> std::io::Result<BackingId> {
         match self {
             ReplySender::Channel(sender) => sender.open_backing(fd),
+            ReplySender::Outbound(sender) => sender.open_backing(fd),
             #[cfg(test)]
             ReplySender::Assert(_) => unreachable!(),
             #[cfg(test)]
