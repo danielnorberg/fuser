@@ -21,6 +21,7 @@ use std::convert::AsRef;
 use std::ffi::OsStr;
 use std::fmt;
 use std::io::IoSlice;
+use std::sync::Arc;
 use std::time::Duration;
 
 #[cfg(target_os = "macos")]
@@ -32,6 +33,12 @@ use crate::{FileAttr, FileType};
 pub trait ReplySender: Send + Sync + Unpin + 'static {
     /// Send data.
     fn send(&self, data: &[IoSlice<'_>]) -> std::io::Result<()>;
+}
+
+impl<T: ReplySender + ?Sized> ReplySender for Arc<T> {
+    fn send(&self, data: &[IoSlice<'_>]) -> std::io::Result<()> {
+        (**self).send(data)
+    }
 }
 
 impl fmt::Debug for Box<dyn ReplySender> {

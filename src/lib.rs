@@ -47,6 +47,8 @@ use std::cmp::max;
 use std::cmp::min;
 
 mod channel;
+/// Transport-agnostic request dispatch APIs.
+pub mod dispatch;
 mod ll;
 mod mnt;
 #[cfg(feature = "abi-7-11")]
