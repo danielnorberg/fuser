@@ -31,10 +31,14 @@ pub const MAX_WRITE_SIZE: usize = 16 * 1024 * 1024;
 /// up to MAX_WRITE_SIZE bytes in a write request, we use that value plus some extra space.
 const BUFFER_SIZE: usize = MAX_WRITE_SIZE + 4096;
 
+/// User access-control mode for session request dispatch.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum SessionACL {
+pub enum SessionACL {
+    /// Allow requests from all users.
     All,
+    /// Allow only requests from root and the session owner.
     RootAndOwner,
+    /// Allow only requests from the session owner.
     Owner,
 }
 
