@@ -34,7 +34,7 @@ pub use reply::ReplyPoll;
 #[cfg(target_os = "macos")]
 pub use reply::ReplyXTimes;
 pub use reply::ReplyXattr;
-pub use reply::{Reply, ReplyAttr, ReplyData, ReplyEmpty, ReplyEntry, ReplyOpen};
+pub use reply::{Reply, ReplyAttr, ReplyData, ReplyEmpty, ReplyEntry, ReplyOpen, ReplySender};
 pub use reply::{
     ReplyBmap, ReplyCreate, ReplyDirectory, ReplyDirectoryPlus, ReplyIoctl, ReplyLock, ReplyLseek,
     ReplyStatfs, ReplyWrite,
@@ -47,7 +47,7 @@ use std::cmp::max;
 use std::cmp::min;
 
 mod channel;
-mod ll;
+pub mod ll;
 mod mnt;
 #[cfg(feature = "abi-7-11")]
 mod notify;
@@ -157,7 +157,8 @@ pub struct KernelConfig {
 }
 
 impl KernelConfig {
-    fn new(capabilities: u32, max_readahead: u32) -> Self {
+    /// Create a new kernel configuration with the given capability flags and max readahead.
+    pub fn new(capabilities: u32, max_readahead: u32) -> Self {
         Self {
             capabilities,
             requested: default_init_flags(capabilities),

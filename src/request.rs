@@ -10,9 +10,11 @@ use log::{debug, error, warn};
 use std::convert::TryFrom;
 #[cfg(feature = "abi-7-28")]
 use std::convert::TryInto;
+use std::fmt;
 use std::path::Path;
 
-use crate::channel::ChannelSender;
+use std::sync::Arc;
+
 use crate::ll::Request as _;
 #[cfg(feature = "abi-7-21")]
 use crate::reply::ReplyDirectoryPlus;
@@ -22,10 +24,9 @@ use crate::Filesystem;
 use crate::{ll, KernelConfig};
 
 /// Request data structure
-#[derive(Debug)]
 pub struct Request<'a> {
     /// Channel sender for sending the reply
-    ch: ChannelSender,
+    ch: Arc<dyn ReplySender>,
     /// Request raw data
     #[allow(unused)]
     data: &'a [u8],
@@ -33,9 +34,18 @@ pub struct Request<'a> {
     request: ll::AnyRequest<'a>,
 }
 
+impl fmt::Debug for Request<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Request")
+            .field("data_len", &self.data.len())
+            .field("request", &self.request)
+            .finish()
+    }
+}
+
 impl<'a> Request<'a> {
     /// Create a new request from the given data
-    pub(crate) fn new(ch: ChannelSender, data: &'a [u8]) -> Option<Request<'a>> {
+    pub fn new(ch: Arc<dyn ReplySender>, data: &'a [u8]) -> Option<Request<'a>> {
         let request = match ll::AnyRequest::try_from(data) {
             Ok(request) => request,
             Err(err) => {

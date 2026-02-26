@@ -737,7 +737,7 @@ pub struct fuse_flush_in {
 }
 
 #[repr(C)]
-#[derive(Debug, FromBytes, FromZeroes)]
+#[derive(Debug, AsBytes, FromBytes, FromZeroes)]
 pub struct fuse_read_in {
     pub fh: u64,
     // NOTE: this field is defined as u64 in fuse_kernel.h in libfuse. However, it is then cast
@@ -855,7 +855,7 @@ pub struct fuse_access_in {
 }
 
 #[repr(C)]
-#[derive(Debug, FromBytes, FromZeroes)]
+#[derive(Debug, AsBytes, FromBytes, FromZeroes)]
 pub struct fuse_init_in {
     pub major: u32,
     pub minor: u32,
@@ -1006,7 +1006,7 @@ pub struct fuse_fallocate_in {
 }
 
 #[repr(C)]
-#[derive(Debug, FromBytes, FromZeroes)]
+#[derive(Debug, AsBytes, FromBytes, FromZeroes)]
 pub struct fuse_in_header {
     pub len: u32,
     pub opcode: u32,
