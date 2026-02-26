@@ -19,7 +19,7 @@ use crate::ll::Request as _;
 #[cfg(feature = "abi-7-21")]
 use crate::reply::ReplyDirectoryPlus;
 use crate::reply::{Reply, ReplyDirectory, ReplySender};
-use crate::session::{Session, SessionACL};
+use crate::session::{FilesystemSession, SessionACL};
 use crate::Filesystem;
 use crate::{ll, KernelConfig};
 
@@ -57,10 +57,11 @@ impl<'a> Request<'a> {
         Some(Self { ch, data, request })
     }
 
-    /// Dispatch request to the given filesystem.
-    /// This calls the appropriate filesystem operation method for the
-    /// request and sends back the returned reply to the kernel
-    pub(crate) fn dispatch<FS: Filesystem>(&self, se: &mut Session<FS>) {
+    /// Dispatch request to the given filesystem session.
+    ///
+    /// This parses the FUSE opcode, calls the appropriate [`Filesystem`] method,
+    /// and sends back the reply through this request's [`ReplySender`].
+    pub fn dispatch<FS: Filesystem>(&self, se: &mut FilesystemSession<FS>) {
         debug!("{}", self.request);
         let unique = self.request.unique();
 
@@ -78,7 +79,7 @@ impl<'a> Request<'a> {
 
     fn dispatch_req<FS: Filesystem>(
         &self,
-        se: &mut Session<FS>,
+        se: &mut FilesystemSession<FS>,
     ) -> Result<Option<Response<'_>>, Errno> {
         let op = self.request.operation().map_err(|_| Errno::ENOSYS)?;
         // Implement allow_root & access check for auto_unmount
