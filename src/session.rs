@@ -66,6 +66,15 @@ pub struct FilesystemSession<FS: Filesystem> {
     pub destroyed: bool,
 }
 
+impl<FS: Filesystem> Drop for FilesystemSession<FS> {
+    fn drop(&mut self) {
+        if !self.destroyed {
+            self.filesystem.destroy();
+            self.destroyed = true;
+        }
+    }
+}
+
 /// The session data structure
 #[derive(Debug)]
 pub struct Session<FS: Filesystem> {
@@ -223,10 +232,6 @@ impl<FS: 'static + Filesystem + Send> Session<FS> {
 
 impl<FS: Filesystem> Drop for Session<FS> {
     fn drop(&mut self) {
-        if !self.inner.destroyed {
-            self.inner.filesystem.destroy();
-            self.inner.destroyed = true;
-        }
         info!("Unmounted {}", self.mountpoint().display());
     }
 }

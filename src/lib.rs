@@ -157,7 +157,6 @@ pub struct KernelConfig {
 }
 
 impl KernelConfig {
-    /// Create a new kernel configuration with the given capability flags and max readahead.
     fn new(capabilities: u32, max_readahead: u32) -> Self {
         Self {
             capabilities,
