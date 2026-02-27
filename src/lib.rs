@@ -47,7 +47,7 @@ use std::cmp::max;
 use std::cmp::min;
 
 mod channel;
-pub mod ll;
+mod ll;
 mod mnt;
 #[cfg(feature = "abi-7-11")]
 mod notify;
@@ -158,7 +158,7 @@ pub struct KernelConfig {
 
 impl KernelConfig {
     /// Create a new kernel configuration with the given capability flags and max readahead.
-    pub fn new(capabilities: u32, max_readahead: u32) -> Self {
+    fn new(capabilities: u32, max_readahead: u32) -> Self {
         Self {
             capabilities,
             requested: default_init_flags(capabilities),
