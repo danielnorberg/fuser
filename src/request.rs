@@ -590,7 +590,7 @@ impl<'a> Request<'a> {
                     x.offset(),
                     ReplyDirectoryPlus::new(
                         self.request.unique().into(),
-                        self.ch.clone(),
+                        sender.clone(),
                         x.size() as usize,
                     ),
                 );
