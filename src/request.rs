@@ -111,7 +111,7 @@ impl<'a> Request<'a> {
                     | ll::Operation::Release(_)
                     | ll::Operation::ReleaseDir(_) => {}
                     _ => {
-                        return Err(Errno::EACCES);
+                        return Err((Errno::EACCES, sender));
                     }
                 }
             }
@@ -131,7 +131,7 @@ impl<'a> Request<'a> {
                     | ll::Operation::Release(_)
                     | ll::Operation::ReleaseDir(_) => {}
                     _ => {
-                        return Err(Errno::EACCES);
+                        return Err((Errno::EACCES, sender));
                     }
                 }
             }
@@ -535,7 +535,7 @@ impl<'a> Request<'a> {
             #[cfg(feature = "abi-7-11")]
             ll::Operation::IoCtl(x) => {
                 if x.unrestricted() {
-                    return Err(Errno::ENOSYS);
+                    return Err((Errno::ENOSYS, sender));
                 } else {
                     se.filesystem.ioctl(
                         self,
@@ -564,7 +564,7 @@ impl<'a> Request<'a> {
             #[cfg(feature = "abi-7-15")]
             ll::Operation::NotifyReply(_) => {
                 // TODO: handle FUSE_NOTIFY_REPLY
-                return Err(Errno::ENOSYS);
+                return Err((Errno::ENOSYS, sender));
             }
             #[cfg(feature = "abi-7-16")]
             ll::Operation::BatchForget(x) => {
@@ -660,7 +660,7 @@ impl<'a> Request<'a> {
             #[cfg(feature = "abi-7-12")]
             ll::Operation::CuseInit(_) => {
                 // TODO: handle CUSE_INIT
-                return Err(Errno::ENOSYS);
+                return Err((Errno::ENOSYS, sender));
             }
         }
         Ok(None)
